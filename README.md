@@ -1,3 +1,5 @@
+<img src="https://github.com/gordon-matt/GedcomSharp/blob/master/_Misc/Logo.png" alt="Logo" width="350" />
+
 Read and write genealogy data in every GEDCOM format: 5.5, 5.5.1, 5.5.5 and 7.0, GEDZIP packages (`.gdz`), and GEDCOM X as JSON, XML or `.gedx` files.
 
 Every line of a file is kept, including vendor extensions this library knows nothing about. A file you read and write again holds the same data. Typed records such as `IndividualRecord` and `FamilyRecord` are views over that structure tree, so you can use the typed API for common work and edit the tree directly for anything else.
