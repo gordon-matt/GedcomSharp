@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>GedcomSharp</RootNamespace>
+		<Description>Read and write GEDCOM 5.5, 5.5.1, 5.5.5 and 7.0 (including GEDZIP), and GEDCOM X JSON, XML and .gedx files. Lossless round-trips, tolerant reading of real-world files, and typed records over the raw structure tree.</Description>
+		<Authors>Matt Gordon</Authors>
+		<PackageTags>gedcom;gedcom7;gedcomx;gedzip;genealogy;family-tree;ansel</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Version>1.0.0</Version>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Ardalis.Result" Version="10.1.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="GedcomSharp.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+</Project>
