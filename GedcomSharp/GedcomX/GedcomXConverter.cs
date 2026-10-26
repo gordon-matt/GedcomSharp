@@ -374,6 +374,7 @@ public static class GedcomXConverter
             About = file?.Path,
             MediaType = file?.MediaType,
             Titles = multimedia.Title is { } title ? [new TextValue(title)] : null,
+            Notes = ToNotes(multimedia.Notes),
             Citations = [new SourceCitation { Value = multimedia.Title ?? file?.Path ?? multimedia.Xref }]
         };
     }
