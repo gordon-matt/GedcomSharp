@@ -15,6 +15,12 @@ public sealed class GedcomReader(GedcomReaderOptions? options = null) : IGedcomR
 {
     private readonly GedcomReaderOptions settings = options ?? GedcomReaderOptions.Default;
 
+    /// <summary>
+    /// Reads the value.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom file.</returns>
     public async Task<Result<GedcomFile>> ReadAsync(string path, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -38,6 +44,12 @@ public sealed class GedcomReader(GedcomReaderOptions? options = null) : IGedcomR
         }
     }
 
+    /// <summary>
+    /// Reads the value.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom file.</returns>
     public async Task<Result<GedcomFile>> ReadAsync(Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -45,6 +57,12 @@ public sealed class GedcomReader(GedcomReaderOptions? options = null) : IGedcomR
         return Read(data, (stream as FileStream)?.Name is string name ? Path.GetFileName(name) : null);
     }
 
+    /// <summary>
+    /// Reads the value.
+    /// </summary>
+    /// <param name="data">The data.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <returns>The outcome for the gedcom file.</returns>
     public Result<GedcomFile> Read(byte[] data, string? fileName = null)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -80,6 +98,11 @@ public sealed class GedcomReader(GedcomReaderOptions? options = null) : IGedcomR
         }
     }
 
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <returns>The outcome for the gedcom file.</returns>
     public Result<GedcomFile> Parse(string text)
     {
         ArgumentNullException.ThrowIfNull(text);
@@ -93,6 +116,12 @@ public sealed class GedcomReader(GedcomReaderOptions? options = null) : IGedcomR
         return ParseText(hasBom ? text[1..] : text, GedcomCharacterEncoding.Utf8, "utf-16", hasBom, null, null, issues);
     }
 
+    /// <summary>
+    /// Reads the gedzip.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedzip package.</returns>
     public async Task<Result<GedzipPackage>> ReadGedzipAsync(string path, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -105,6 +134,12 @@ public sealed class GedcomReader(GedcomReaderOptions? options = null) : IGedcomR
         return await ReadGedzipAsync(stream, cancellationToken);
     }
 
+    /// <summary>
+    /// Reads the gedzip.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedzip package.</returns>
     public async Task<Result<GedzipPackage>> ReadGedzipAsync(Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(stream);

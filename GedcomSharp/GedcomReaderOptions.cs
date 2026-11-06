@@ -1,7 +1,13 @@
 namespace GedcomSharp;
 
+/// <summary>
+/// Represents the gedcom reader options.
+/// </summary>
 public sealed class GedcomReaderOptions
 {
+    /// <summary>
+    /// Gets the default.
+    /// </summary>
     public static GedcomReaderOptions Default { get; } = new();
 
     /// <summary>

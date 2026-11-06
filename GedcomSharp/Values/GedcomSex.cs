@@ -1,11 +1,20 @@
 namespace GedcomSharp.Values;
 
+/// <summary>
+/// Specifies the gedcom sex.
+/// </summary>
 public enum GedcomSex
 {
     /// <summary>No SEX structure.</summary>
     NotRecorded,
 
+    /// <summary>
+    /// The male value.
+    /// </summary>
     Male,
+    /// <summary>
+    /// The female value.
+    /// </summary>
     Female,
 
     /// <summary><c>X</c>: does not fit the male/female categories. 7.0 and 5.5.5 only; 5.5 and 5.5.1 output writes <c>U</c>.</summary>
@@ -15,10 +24,17 @@ public enum GedcomSex
     Unknown
 }
 
+/// <summary>
+/// Provides extension methods for gedcom sexs.
+/// </summary>
 public static class GedcomSexExtensions
 {
     extension(GedcomSex sex)
     {
+        /// <summary>
+        /// Converts the value to the code.
+        /// </summary>
+        /// <returns>The code.</returns>
         public string? ToCode() => sex switch
         {
             GedcomSex.Male => "M",

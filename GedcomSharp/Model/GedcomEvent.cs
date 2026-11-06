@@ -7,6 +7,9 @@ namespace GedcomSharp.Model;
 /// </summary>
 public sealed class GedcomEvent(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets a value indicating whether this instance is attribute.
+    /// </summary>
     public bool IsAttribute => GedcomTags.IndividualAttributes.Contains(Tag) && Tag != GedcomTags.RESI;
 
     /// <summary>The classification of a generic <c>EVEN</c>/<c>FACT</c>, or a descriptor for others (<c>TYPE</c>).</summary>
@@ -16,6 +19,9 @@ public sealed class GedcomEvent(GedcomStructure structure) : GedcomCitableView(s
         set => Set(GedcomTags.TYPE, value);
     }
 
+    /// <summary>
+    /// Gets or sets the date.
+    /// </summary>
     public GedcomDate Date
     {
         get => GetDate();
@@ -25,8 +31,14 @@ public sealed class GedcomEvent(GedcomStructure structure) : GedcomCitableView(s
     /// <summary>The DATE value as written, for display of dates this library could not parse.</summary>
     public string? DateText => Get(GedcomTags.DATE);
 
+    /// <summary>
+    /// Gets the place.
+    /// </summary>
     public Place? Place => Structure.Child(GedcomTags.PLAC) is { } place ? new Place(place) : null;
 
+    /// <summary>
+    /// Gets or sets the place name.
+    /// </summary>
     public string? PlaceName
     {
         get => Get(GedcomTags.PLAC);
@@ -42,14 +54,23 @@ public sealed class GedcomEvent(GedcomStructure structure) : GedcomCitableView(s
         }
     }
 
+    /// <summary>
+    /// Gets the contact.
+    /// </summary>
     public ContactDetails Contact => new(Structure);
 
+    /// <summary>
+    /// Gets or sets the age.
+    /// </summary>
     public GedcomAge? Age
     {
         get => GedcomAge.Parse(Get(GedcomTags.AGE));
         set => Set(GedcomTags.AGE, value?.Format(Version));
     }
 
+    /// <summary>
+    /// Gets or sets the cause.
+    /// </summary>
     public string? Cause
     {
         get => Get(GedcomTags.CAUS);
@@ -63,12 +84,18 @@ public sealed class GedcomEvent(GedcomStructure structure) : GedcomCitableView(s
         set => Set(GedcomTags.AGNC, value);
     }
 
+    /// <summary>
+    /// Gets or sets the religion.
+    /// </summary>
     public string? Religion
     {
         get => Get(GedcomTags.RELI);
         set => Set(GedcomTags.RELI, value);
     }
 
+    /// <summary>
+    /// Gets or sets the restriction.
+    /// </summary>
     public string? Restriction
     {
         get => Get(GedcomTags.RESN);
@@ -110,6 +137,9 @@ public sealed class GedcomEvent(GedcomStructure structure) : GedcomCitableView(s
 /// <summary><c>PLAC</c>: a place name (jurisdictions separated by commas), with optional coordinates and translations.</summary>
 public sealed class Place(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
     public string? Name
     {
         get => Value;
@@ -126,18 +156,27 @@ public sealed class Place(GedcomStructure structure) : GedcomCitableView(structu
         set => Set(GedcomTags.FORM, value);
     }
 
+    /// <summary>
+    /// Gets or sets the latitude.
+    /// </summary>
     public double? Latitude
     {
         get => GedcomCoordinates.Parse(Structure.Child(GedcomTags.MAP, "_MAP")?.ChildValue(GedcomTags.LATI), isLatitude: true);
         set => SetCoordinate(GedcomTags.LATI, value, isLatitude: true);
     }
 
+    /// <summary>
+    /// Gets or sets the longitude.
+    /// </summary>
     public double? Longitude
     {
         get => GedcomCoordinates.Parse(Structure.Child(GedcomTags.MAP, "_MAP")?.ChildValue(GedcomTags.LONG), isLatitude: false);
         set => SetCoordinate(GedcomTags.LONG, value, isLatitude: false);
     }
 
+    /// <summary>
+    /// Gets the translations.
+    /// </summary>
     public IEnumerable<Place> Translations => Views([GedcomTags.TRAN, GedcomTags.FONE, GedcomTags.ROMN], child => new Place(child));
 
     private void SetCoordinate(string tag, double? value, bool isLatitude)
@@ -165,72 +204,131 @@ public sealed class Place(GedcomStructure structure) : GedcomCitableView(structu
 /// </summary>
 public sealed class ContactDetails(GedcomStructure structure) : GedcomStructureView(structure)
 {
+    /// <summary>
+    /// Gets the address.
+    /// </summary>
     public Address? Address => Structure.Child(GedcomTags.ADDR) is { } address ? new Address(address) : null;
 
+    /// <summary>
+    /// Gets the or add address.
+    /// </summary>
+    /// <returns>The or add address.</returns>
     public Address GetOrAddAddress() => new(Structure.GetOrAddChild(GedcomTags.ADDR));
 
+    /// <summary>
+    /// Gets the phones.
+    /// </summary>
     public IEnumerable<string> Phones => Values(GedcomTags.PHON);
 
+    /// <summary>
+    /// Gets the emails.
+    /// </summary>
     public IEnumerable<string> Emails => Values(GedcomTags.EMAIL, GedcomTags.EMAI, GedcomTags.Extensions.EMAIL);
 
+    /// <summary>
+    /// Gets the faxes.
+    /// </summary>
     public IEnumerable<string> Faxes => Values(GedcomTags.FAX, GedcomTags.Extensions.FAX);
 
+    /// <summary>
+    /// Gets the websites.
+    /// </summary>
     public IEnumerable<string> Websites => Values(GedcomTags.WWW, GedcomTags.Extensions.WWW, GedcomTags.Extensions.URL);
 
+    /// <summary>
+    /// Adds the phone.
+    /// </summary>
+    /// <param name="phone">The phone.</param>
     public void AddPhone(string phone) => Structure.AddChild(GedcomTags.PHON, phone);
 
+    /// <summary>
+    /// Adds the email.
+    /// </summary>
+    /// <param name="email">The email.</param>
     public void AddEmail(string email) => Structure.AddChild(Version == GedcomVersion.V55 ? GedcomTags.Extensions.EMAIL : GedcomTags.EMAIL, email);
 
+    /// <summary>
+    /// Adds the fax.
+    /// </summary>
+    /// <param name="fax">The fax.</param>
     public void AddFax(string fax) => Structure.AddChild(Version == GedcomVersion.V55 ? GedcomTags.Extensions.FAX : GedcomTags.FAX, fax);
 
+    /// <summary>
+    /// Adds the website.
+    /// </summary>
+    /// <param name="url">The URL.</param>
     public void AddWebsite(string url) => Structure.AddChild(Version == GedcomVersion.V55 ? GedcomTags.Extensions.WWW : GedcomTags.WWW, url);
 }
 
 /// <summary><c>ADDR</c>: the address as free text (lines joined with newlines) plus optional parsed parts.</summary>
 public sealed class Address(GedcomStructure structure) : GedcomStructureView(structure)
 {
+    /// <summary>
+    /// Gets or sets the lines.
+    /// </summary>
     public string? Lines
     {
         get => Value;
         set => Value = value;
     }
 
+    /// <summary>
+    /// Gets or sets the line1.
+    /// </summary>
     public string? Line1
     {
         get => Get(GedcomTags.ADR1);
         set => Set(GedcomTags.ADR1, value);
     }
 
+    /// <summary>
+    /// Gets or sets the line2.
+    /// </summary>
     public string? Line2
     {
         get => Get(GedcomTags.ADR2);
         set => Set(GedcomTags.ADR2, value);
     }
 
+    /// <summary>
+    /// Gets or sets the line3.
+    /// </summary>
     public string? Line3
     {
         get => Get(GedcomTags.ADR3);
         set => Set(GedcomTags.ADR3, value);
     }
 
+    /// <summary>
+    /// Gets or sets the city.
+    /// </summary>
     public string? City
     {
         get => Get(GedcomTags.CITY);
         set => Set(GedcomTags.CITY, value);
     }
 
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
     public string? State
     {
         get => Get(GedcomTags.STAE);
         set => Set(GedcomTags.STAE, value);
     }
 
+    /// <summary>
+    /// Gets or sets the postal code.
+    /// </summary>
     public string? PostalCode
     {
         get => Get(GedcomTags.POST);
         set => Set(GedcomTags.POST, value);
     }
 
+    /// <summary>
+    /// Gets or sets the country.
+    /// </summary>
     public string? Country
     {
         get => Get(GedcomTags.CTRY);

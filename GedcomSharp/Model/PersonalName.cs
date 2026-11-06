@@ -16,36 +16,54 @@ public sealed class PersonalName(GedcomStructure structure) : GedcomCitableView(
     /// <summary>The name with the surname slashes removed, for display.</summary>
     public string DisplayName => string.Join(' ', (Value ?? string.Empty).Replace("/", " ", StringComparison.Ordinal).Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
+    /// <summary>
+    /// Gets or sets the given.
+    /// </summary>
     public string? Given
     {
         get => Get(GedcomTags.GIVN) ?? Split(Value).Given;
         set => Set(GedcomTags.GIVN, value);
     }
 
+    /// <summary>
+    /// Gets or sets the surname.
+    /// </summary>
     public string? Surname
     {
         get => Get(GedcomTags.SURN) ?? Split(Value).Surname;
         set => Set(GedcomTags.SURN, value);
     }
 
+    /// <summary>
+    /// Gets or sets the prefix.
+    /// </summary>
     public string? Prefix
     {
         get => Get(GedcomTags.NPFX);
         set => Set(GedcomTags.NPFX, value);
     }
 
+    /// <summary>
+    /// Gets or sets the suffix.
+    /// </summary>
     public string? Suffix
     {
         get => Get(GedcomTags.NSFX) ?? Split(Value).Suffix;
         set => Set(GedcomTags.NSFX, value);
     }
 
+    /// <summary>
+    /// Gets or sets the surname prefix.
+    /// </summary>
     public string? SurnamePrefix
     {
         get => Get(GedcomTags.SPFX);
         set => Set(GedcomTags.SPFX, value);
     }
 
+    /// <summary>
+    /// Gets or sets the nickname.
+    /// </summary>
     public string? Nickname
     {
         get => Get(GedcomTags.NICK);

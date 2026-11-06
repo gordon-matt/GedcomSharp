@@ -6,6 +6,10 @@ namespace GedcomSharp.Model;
 /// </summary>
 public class GedcomRecord : GedcomCitableView
 {
+    /// <summary>
+    /// Initializes a new instance of the GedcomRecord class.
+    /// </summary>
+    /// <param name="structure">The structure.</param>
     public GedcomRecord(GedcomStructure structure)
         : base(structure)
     {
@@ -25,14 +29,26 @@ public class GedcomRecord : GedcomCitableView
         _ => new GedcomRecord(structure)
     };
 
+    /// <summary>
+    /// Gets or sets the xref.
+    /// </summary>
     public string? Xref
     {
         get => Structure.Xref;
         set => Structure.Xref = value;
     }
 
+    /// <summary>
+    /// Gets the user references.
+    /// </summary>
     public IEnumerable<UserReference> UserReferences => Views(GedcomTags.REFN, child => new UserReference(child));
 
+    /// <summary>
+    /// Adds the user reference.
+    /// </summary>
+    /// <param name="number">The number.</param>
+    /// <param name="type">The type.</param>
+    /// <returns>The user reference.</returns>
     public UserReference AddUserReference(string number, string? type = null)
     {
         var reference = new UserReference(Structure.AddChild(GedcomTags.REFN, number));
@@ -50,6 +66,9 @@ public class GedcomRecord : GedcomCitableView
     /// <summary>Unique identifiers: 7.0 <c>UID</c> and the widely used 5.x extension <c>_UID</c>.</summary>
     public IEnumerable<string> Uids => Values(GedcomTags.UID, GedcomTags.Extensions.UID);
 
+    /// <summary>
+    /// Gets or sets the uid.
+    /// </summary>
     public string? Uid
     {
         get => Uids.FirstOrDefault();
@@ -64,8 +83,17 @@ public class GedcomRecord : GedcomCitableView
         }
     }
 
+    /// <summary>
+    /// Gets the external ids.
+    /// </summary>
     public IEnumerable<ExternalId> ExternalIds => Views(GedcomTags.EXID, child => new ExternalId(child));
 
+    /// <summary>
+    /// Adds the external identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="type">The type.</param>
+    /// <returns>The external identifier.</returns>
     public ExternalId AddExternalId(string id, string? type = null)
     {
         var externalId = new ExternalId(Structure.AddChild(GedcomTags.EXID, id));
@@ -73,6 +101,9 @@ public class GedcomRecord : GedcomCitableView
         return externalId;
     }
 
+    /// <summary>
+    /// Gets the changed.
+    /// </summary>
     public ChangeDate? Changed => Structure.Child(GedcomTags.CHAN) is { } change ? new ChangeDate(change) : null;
 
     /// <summary>The 7.0 creation date (<c>CREA</c>).</summary>
@@ -93,6 +124,9 @@ public class GedcomRecord : GedcomCitableView
         set => Set(GedcomTags.RESN, value);
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this instance is private.
+    /// </summary>
     public bool IsPrivate => Restriction?.Contains("PRIVACY", StringComparison.OrdinalIgnoreCase) == true
         || Restriction?.Contains("CONFIDENTIAL", StringComparison.OrdinalIgnoreCase) == true;
 }

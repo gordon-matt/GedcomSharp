@@ -25,6 +25,13 @@ public sealed class GedcomWriter(GedcomWriterOptions? options = null) : IGedcomW
         GedcomFile Written,
         GedcomIssueCollector Issues);
 
+    /// <summary>
+    /// Writes the value.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom write summary.</returns>
     public async Task<Result<GedcomWriteSummary>> WriteAsync(GedcomFile file, string path, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -47,6 +54,13 @@ public sealed class GedcomWriter(GedcomWriterOptions? options = null) : IGedcomW
         return Result.Success(Summarize(prepared.Value, data.LongLength));
     }
 
+    /// <summary>
+    /// Writes the value.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom write summary.</returns>
     public async Task<Result<GedcomWriteSummary>> WriteAsync(GedcomFile file, Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -61,10 +75,28 @@ public sealed class GedcomWriter(GedcomWriterOptions? options = null) : IGedcomW
         return Result.Success(Summarize(prepared.Value, data.LongLength));
     }
 
+    /// <summary>
+    /// Writes to the bytes.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <returns>The outcome for the byte[].</returns>
     public Result<byte[]> WriteToBytes(GedcomFile file) => Prepare(file).Map(Encode);
 
+    /// <summary>
+    /// Writes to the string.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <returns>The outcome for the string.</returns>
     public Result<string> WriteToString(GedcomFile file) => Prepare(file).Map(prepared => prepared.Text);
 
+    /// <summary>
+    /// Writes the gedzip.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="mediaFiles">The media files.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom write summary.</returns>
     public async Task<Result<GedcomWriteSummary>> WriteGedzipAsync(
         GedcomFile file,
         Stream stream,

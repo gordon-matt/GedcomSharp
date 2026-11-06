@@ -22,6 +22,11 @@ public sealed class GedcomStructure
     private string? text;
     private string? pointerTarget;
 
+    /// <summary>
+    /// Initializes a new instance of the GedcomStructure class.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <param name="value">The value.</param>
     public GedcomStructure(string tag, string? value = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(tag);
@@ -30,8 +35,17 @@ public sealed class GedcomStructure
         Children = new GedcomStructureCollection(this);
     }
 
+    /// <summary>
+    /// Creates the pointer.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <param name="pointer">The pointer.</param>
+    /// <returns>The pointer.</returns>
     public static GedcomStructure CreatePointer(string tag, string pointer) => new(tag) { Pointer = pointer };
 
+    /// <summary>
+    /// Gets or sets the tag.
+    /// </summary>
     public string Tag
     {
         get => tagName;
@@ -85,14 +99,29 @@ public sealed class GedcomStructure
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this instance has pointer.
+    /// </summary>
     public bool HasPointer => pointerTarget is not null;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance is void pointer.
+    /// </summary>
     public bool IsVoidPointer => pointerTarget == VOID_POINTER;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance has value.
+    /// </summary>
     public bool HasValue => !string.IsNullOrEmpty(text);
 
+    /// <summary>
+    /// Gets the children.
+    /// </summary>
     public GedcomStructureCollection Children { get; }
 
+    /// <summary>
+    /// Gets or sets the parent.
+    /// </summary>
     public GedcomStructure? Parent { get; internal set; }
 
     /// <summary>Set while the structure is a record in a <see cref="GedcomFile"/>.</summary>
@@ -101,8 +130,14 @@ public sealed class GedcomStructure
     /// <summary>The 1-based line this structure was read from, or 0 when it was created in code.</summary>
     public int LineNumber { get; internal set; }
 
+    /// <summary>
+    /// Gets the level.
+    /// </summary>
     public int Level => Parent is null ? 0 : Parent.Level + 1;
 
+    /// <summary>
+    /// Gets the root.
+    /// </summary>
     public GedcomStructure Root => Parent?.Root ?? this;
 
     /// <summary>The file the structure belongs to, found through its record.</summary>
@@ -111,8 +146,16 @@ public sealed class GedcomStructure
     /// <summary>Extension tags start with an underscore (<c>_PRIM</c>, <c>_UID</c>).</summary>
     public bool IsExtension => tagName[0] == '_';
 
+    /// <summary>
+    /// Gets a value indicating whether this instance has children.
+    /// </summary>
     public bool HasChildren => Children.Count > 0;
 
+    /// <summary>
+    /// Gets the child.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <returns>The child.</returns>
     public GedcomStructure? Child(string tag)
     {
         foreach (var child in Children)
@@ -140,10 +183,25 @@ public sealed class GedcomStructure
         return null;
     }
 
+    /// <summary>
+    /// Gets the children with tag.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <returns>The children with tag.</returns>
     public IEnumerable<GedcomStructure> ChildrenWithTag(string tag) => Children.Where(child => child.Tag == tag);
 
+    /// <summary>
+    /// Gets the children with tag.
+    /// </summary>
+    /// <param name="tags">The tags.</param>
+    /// <returns>The children with tag.</returns>
     public IEnumerable<GedcomStructure> ChildrenWithTag(params string[] tags) => Children.Where(child => tags.Contains(child.Tag));
 
+    /// <summary>
+    /// Gets the child value.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <returns>The child value.</returns>
     public string? ChildValue(string tag) => Child(tag)?.Value;
 
     /// <summary>Follows a tag path from this structure, e.g. <c>Find("GEDC", "VERS")</c> on HEAD.</summary>
@@ -162,6 +220,12 @@ public sealed class GedcomStructure
         return current;
     }
 
+    /// <summary>
+    /// Adds the child.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <param name="value">The value.</param>
+    /// <returns>The child.</returns>
     public GedcomStructure AddChild(string tag, string? value = null)
     {
         var child = new GedcomStructure(tag, value);
@@ -169,6 +233,12 @@ public sealed class GedcomStructure
         return child;
     }
 
+    /// <summary>
+    /// Adds the pointer.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <param name="pointer">The pointer.</param>
+    /// <returns>The pointer.</returns>
     public GedcomStructure AddPointer(string tag, string pointer)
     {
         var child = CreatePointer(tag, pointer);
@@ -208,6 +278,12 @@ public sealed class GedcomStructure
         return child;
     }
 
+    /// <summary>
+    /// Sets the child pointer.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <param name="pointer">The pointer.</param>
+    /// <returns>The child pointer.</returns>
     public GedcomStructure? SetChildPointer(string tag, string? pointer)
     {
         var child = Child(tag);
@@ -233,6 +309,11 @@ public sealed class GedcomStructure
     /// <summary>Returns the first child with <paramref name="tag"/>, adding an empty one when missing.</summary>
     public GedcomStructure GetOrAddChild(string tag) => Child(tag) ?? AddChild(tag);
 
+    /// <summary>
+    /// Removes the children.
+    /// </summary>
+    /// <param name="tag">The tag.</param>
+    /// <returns>The children.</returns>
     public int RemoveChildren(string tag)
     {
         int removed = 0;
@@ -279,6 +360,10 @@ public sealed class GedcomStructure
         }
     }
 
+    /// <summary>
+    /// Gets the descendants and self.
+    /// </summary>
+    /// <returns>The descendants and self.</returns>
     public IEnumerable<GedcomStructure> DescendantsAndSelf() => Descendants().Prepend(this);
 
     /// <summary>The tags from the record down to this structure, e.g. <c>INDI.BIRT.DATE</c>.</summary>
@@ -343,6 +428,7 @@ public sealed class GedcomStructure
         return trimmed.Length == 0 ? null : trimmed;
     }
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         var builder = new StringBuilder();

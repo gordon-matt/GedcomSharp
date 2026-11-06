@@ -10,6 +10,9 @@ public sealed class GedcomHeader(GedcomStructure structure) : GedcomCitableView(
         set => Set(GedcomTags.SOUR, value);
     }
 
+    /// <summary>
+    /// Gets or sets the source version.
+    /// </summary>
     public string? SourceVersion
     {
         get => Structure.Find(GedcomTags.SOUR, GedcomTags.VERS)?.Value;
@@ -23,40 +26,64 @@ public sealed class GedcomHeader(GedcomStructure structure) : GedcomCitableView(
         set => Structure.GetOrAddChild(GedcomTags.SOUR).SetChildValue(GedcomTags.NAME, value);
     }
 
+    /// <summary>
+    /// Gets the source corporation.
+    /// </summary>
     public string? SourceCorporation => Structure.Find(GedcomTags.SOUR, GedcomTags.CORP)?.Value;
 
+    /// <summary>
+    /// Gets or sets the destination.
+    /// </summary>
     public string? Destination
     {
         get => Get(GedcomTags.DEST);
         set => Set(GedcomTags.DEST, value);
     }
 
+    /// <summary>
+    /// Gets or sets the date.
+    /// </summary>
     public GedcomDate Date
     {
         get => GetDate();
         set => SetDate(value);
     }
 
+    /// <summary>
+    /// Gets the time.
+    /// </summary>
     public string? Time => Structure.Child(GedcomTags.DATE)?.ChildValue(GedcomTags.TIME);
 
+    /// <summary>
+    /// Gets or sets the submitter xref.
+    /// </summary>
     public string? SubmitterXref
     {
         get => Structure.Child(GedcomTags.SUBM)?.Pointer;
         set => Structure.SetChildPointer(GedcomTags.SUBM, value);
     }
 
+    /// <summary>
+    /// Gets or sets the submission xref.
+    /// </summary>
     public string? SubmissionXref
     {
         get => Structure.Child(GedcomTags.SUBN)?.Pointer;
         set => Structure.SetChildPointer(GedcomTags.SUBN, value);
     }
 
+    /// <summary>
+    /// Gets or sets the copyright.
+    /// </summary>
     public string? Copyright
     {
         get => Get(GedcomTags.COPR);
         set => Set(GedcomTags.COPR, value);
     }
 
+    /// <summary>
+    /// Gets or sets the language.
+    /// </summary>
     public string? Language
     {
         get => Get(GedcomTags.LANG);
@@ -79,6 +106,9 @@ public sealed class GedcomHeader(GedcomStructure structure) : GedcomCitableView(
         set => Structure.GetOrAddChild(GedcomTags.PLAC).SetChildValue(GedcomTags.FORM, value);
     }
 
+    /// <summary>
+    /// Gets the note.
+    /// </summary>
     public string? Note => Get(GedcomTags.NOTE);
 
     /// <summary>The 7.0 extension-tag declarations (<c>SCHMA.TAG</c>): tag to URI, e.g. <c>_SKYPEID</c> to <c>http://xmlns.com/foaf/0.1/skypeID</c>.</summary>

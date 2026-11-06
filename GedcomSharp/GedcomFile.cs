@@ -75,8 +75,14 @@ public sealed class GedcomFile
     /// <summary>The version the data follows. Changing it does not convert anything; use <see cref="ConvertTo"/> for that.</summary>
     public GedcomVersion Version { get; set; }
 
+    /// <summary>
+    /// Gets the header.
+    /// </summary>
     public GedcomHeader Header { get; }
 
+    /// <summary>
+    /// Gets the header structure.
+    /// </summary>
     public GedcomStructure HeaderStructure => Header.Structure;
 
     /// <summary>All records except HEAD and TRLR, in file order.</summary>
@@ -88,12 +94,24 @@ public sealed class GedcomFile
     /// <summary>How the data was stored, when it was read from a file.</summary>
     public GedcomSourceInfo? Source { get; internal set; }
 
+    /// <summary>
+    /// Gets the individuals.
+    /// </summary>
     public IEnumerable<IndividualRecord> Individuals => Typed(GedcomTags.INDI, structure => new IndividualRecord(structure));
 
+    /// <summary>
+    /// Gets the families.
+    /// </summary>
     public IEnumerable<FamilyRecord> Families => Typed(GedcomTags.FAM, structure => new FamilyRecord(structure));
 
+    /// <summary>
+    /// Gets the sources.
+    /// </summary>
     public IEnumerable<SourceRecord> Sources => Typed(GedcomTags.SOUR, structure => new SourceRecord(structure));
 
+    /// <summary>
+    /// Gets the repositories.
+    /// </summary>
     public IEnumerable<RepositoryRecord> Repositories => Typed(GedcomTags.REPO, structure => new RepositoryRecord(structure));
 
     /// <summary>Shared notes: 5.x NOTE records and 7.0 SNOTE records.</summary>
@@ -101,10 +119,19 @@ public sealed class GedcomFile
         .Where(record => record.Tag is GedcomTags.NOTE or GedcomTags.SNOTE)
         .Select(record => new NoteRecord(record));
 
+    /// <summary>
+    /// Gets the multimedia.
+    /// </summary>
     public IEnumerable<MultimediaRecord> Multimedia => Typed(GedcomTags.OBJE, structure => new MultimediaRecord(structure));
 
+    /// <summary>
+    /// Gets the submitters.
+    /// </summary>
     public IEnumerable<SubmitterRecord> Submitters => Typed(GedcomTags.SUBM, structure => new SubmitterRecord(structure));
 
+    /// <summary>
+    /// Gets the submissions.
+    /// </summary>
     public IEnumerable<SubmissionRecord> Submissions => Typed(GedcomTags.SUBN, structure => new SubmissionRecord(structure));
 
     /// <summary>Every record wrapped in its typed view.</summary>
@@ -123,10 +150,26 @@ public sealed class GedcomFile
         return xrefIndex.GetValueOrDefault(key);
     }
 
+    /// <summary>
+    /// Finds the value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The t.</returns>
     public T? Find<T>(string? xref) where T : GedcomRecord => Find(xref) is { } structure ? GedcomRecord.Create(structure) as T : null;
 
+    /// <summary>
+    /// Finds the record.
+    /// </summary>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The record.</returns>
     public GedcomRecord? FindRecord(string? xref) => Find(xref) is { } structure ? GedcomRecord.Create(structure) : null;
 
+    /// <summary>
+    /// Determines whether the collection contains the specified value.
+    /// </summary>
+    /// <param name="xref">The xref.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public bool Contains(string? xref) => Find(xref) is not null;
 
     /// <summary>All structures in the dataset that point to <paramref name="xref"/>.</summary>
@@ -180,10 +223,26 @@ public sealed class GedcomFile
         return GedcomRecord.Create(record);
     }
 
+    /// <summary>
+    /// Adds the individual.
+    /// </summary>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The individual.</returns>
     public IndividualRecord AddIndividual(string? xref = null) => AddTyped(GedcomTags.INDI, xref, structure => new IndividualRecord(structure));
 
+    /// <summary>
+    /// Adds the family.
+    /// </summary>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The family.</returns>
     public FamilyRecord AddFamily(string? xref = null) => AddTyped(GedcomTags.FAM, xref, structure => new FamilyRecord(structure));
 
+    /// <summary>
+    /// Adds the source.
+    /// </summary>
+    /// <param name="title">The title.</param>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The source.</returns>
     public SourceRecord AddSource(string? title = null, string? xref = null)
     {
         var source = AddTyped(GedcomTags.SOUR, xref, structure => new SourceRecord(structure));
@@ -191,6 +250,12 @@ public sealed class GedcomFile
         return source;
     }
 
+    /// <summary>
+    /// Adds the repository.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The repository.</returns>
     public RepositoryRecord AddRepository(string name, string? xref = null)
     {
         var repository = AddTyped(GedcomTags.REPO, xref, structure => new RepositoryRecord(structure));
@@ -206,6 +271,12 @@ public sealed class GedcomFile
         return note;
     }
 
+    /// <summary>
+    /// Adds the multimedia.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The multimedia.</returns>
     public MultimediaRecord AddMultimedia(string? path = null, string? xref = null)
     {
         var multimedia = AddTyped(GedcomTags.OBJE, xref, structure => new MultimediaRecord(structure));
@@ -217,6 +288,12 @@ public sealed class GedcomFile
         return multimedia;
     }
 
+    /// <summary>
+    /// Adds the submitter.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <param name="xref">The xref.</param>
+    /// <returns>The submitter.</returns>
     public SubmitterRecord AddSubmitter(string name, string? xref = null)
     {
         var submitter = AddTyped(GedcomTags.SUBM, xref, structure => new SubmitterRecord(structure));
@@ -258,6 +335,12 @@ public sealed class GedcomFile
     /// <summary>Removes a record. With <paramref name="removeReferences"/>, structures pointing to it (FAMS, CHIL, SOUR citations...) are removed too.</summary>
     public bool Remove(GedcomRecord record, bool removeReferences = true) => Remove(record.Structure, removeReferences);
 
+    /// <summary>
+    /// Removes the value.
+    /// </summary>
+    /// <param name="record">The record.</param>
+    /// <param name="removeReferences">The remove references.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public bool Remove(GedcomStructure record, bool removeReferences = true)
     {
         if (!Records.Remove(record))

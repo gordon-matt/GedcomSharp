@@ -25,10 +25,18 @@ public enum GedcomCharacterEncoding
     Other
 }
 
+/// <summary>
+/// Provides gedcom encodings.
+/// </summary>
 public static class GedcomEncodings
 {
     private static readonly Encoding utf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
 
+    /// <summary>
+    /// Gets the encoding.
+    /// </summary>
+    /// <param name="encoding">The encoding.</param>
+    /// <returns>The encoding.</returns>
     public static Encoding GetEncoding(GedcomCharacterEncoding encoding) => encoding switch
     {
         GedcomCharacterEncoding.Utf8 => utf8,
@@ -51,6 +59,12 @@ public static class GedcomEncodings
         _ => "UTF-8"
     };
 
+    /// <summary>
+    /// Determines whether this instance is allowed.
+    /// </summary>
+    /// <param name="encoding">The encoding.</param>
+    /// <param name="version">The version.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public static bool IsAllowed(GedcomCharacterEncoding encoding, GedcomVersion version) => version switch
     {
         GedcomVersion.V70 => encoding == GedcomCharacterEncoding.Utf8,

@@ -3,6 +3,13 @@ namespace GedcomSharp.Values;
 /// <summary>A single calendar date with year, month or day precision: the <c>1 JAN 1900</c> in <c>BEF 1 JAN 1900</c>.</summary>
 public sealed record GedcomDatePart
 {
+    /// <summary>
+    /// Initializes a new instance of the GedcomDatePart class.
+    /// </summary>
+    /// <param name="year">The year.</param>
+    /// <param name="month">The month.</param>
+    /// <param name="day">The day.</param>
+    /// <param name="calendar">The calendar.</param>
     public GedcomDatePart(int year, int? month = null, int? day = null, GedcomCalendar calendar = GedcomCalendar.Gregorian)
     {
         if (day is not null && month is null)
@@ -16,6 +23,9 @@ public sealed record GedcomDatePart
         Calendar = calendar;
     }
 
+    /// <summary>
+    /// Gets or sets the calendar.
+    /// </summary>
     public GedcomCalendar Calendar { get; init; }
 
     /// <summary>The calendar as written for <see cref="GedcomCalendar.Other"/> (e.g. <c>ROMAN</c>, <c>_MAYAN</c>).</summary>
@@ -30,8 +40,14 @@ public sealed record GedcomDatePart
     /// <summary>The month code for calendars whose months are not known to this library.</summary>
     public string? MonthCode { get; init; }
 
+    /// <summary>
+    /// Gets or sets the day.
+    /// </summary>
     public int? Day { get; init; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is bce.
+    /// </summary>
     public bool IsBce { get; init; }
 
     /// <summary>
@@ -40,8 +56,14 @@ public sealed record GedcomDatePart
     /// </summary>
     public int? DualYear { get; init; }
 
+    /// <summary>
+    /// Gets a value indicating whether this instance has day.
+    /// </summary>
     public bool HasDay => Day is not null;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance has month.
+    /// </summary>
     public bool HasMonth => Month is not null || MonthCode is not null;
 
     /// <summary>True for calendars this library can convert to Julian Day Numbers.</summary>
@@ -114,8 +136,16 @@ public sealed record GedcomDatePart
         return year is >= 1 and <= 9999 ? new DateOnly(year, month, day) : null;
     }
 
+    /// <summary>
+    /// Creates a value from the date only.
+    /// </summary>
+    /// <param name="date">The date.</param>
+    /// <returns>The date only.</returns>
     public static GedcomDatePart FromDateOnly(DateOnly date) => new(date.Year, date.Month, date.Day);
 
+    /// <summary>
+    /// Gets the month text.
+    /// </summary>
     public string? MonthText => Month is int month && GedcomCalendarMath.GetMonthCodes(Calendar) is { Count: > 0 } codes && month <= codes.Count
         ? codes[month - 1]
         : MonthCode;
@@ -179,5 +209,6 @@ public sealed record GedcomDatePart
         return builder.ToString();
     }
 
+    /// <inheritdoc/>
     public override string ToString() => Format(GedcomVersion.V70);
 }

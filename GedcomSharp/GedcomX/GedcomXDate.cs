@@ -5,6 +5,7 @@ namespace GedcomSharp.GedcomX;
 /// <summary>A point in time in the GEDCOM X formal date format: <c>+1900-01-05</c>, optionally with a time.</summary>
 public sealed record GedcomXSimpleDate(int Year, int? Month = null, int? Day = null, int? Hours = null, int? Minutes = null, int? Seconds = null, string? TimeZone = null)
 {
+    /// <inheritdoc/>
     public override string ToString()
     {
         var builder = new StringBuilder();
@@ -43,27 +44,61 @@ public sealed record GedcomXSimpleDate(int Year, int? Month = null, int? Day = n
 /// </summary>
 public sealed partial record GedcomXDate
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is approximate.
+    /// </summary>
     public bool IsApproximate { get; init; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is range.
+    /// </summary>
     public bool IsRange { get; init; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance is recurring.
+    /// </summary>
     public bool IsRecurring { get; init; }
 
     /// <summary>For recurrences, how many times; null for unbounded.</summary>
     public int? Repetitions { get; init; }
 
+    /// <summary>
+    /// Gets or sets the start.
+    /// </summary>
     public GedcomXSimpleDate? Start { get; init; }
 
+    /// <summary>
+    /// Gets or sets the end.
+    /// </summary>
     public GedcomXSimpleDate? End { get; init; }
 
     /// <summary>An ISO 8601 duration such as <c>P10Y</c> used instead of an end date.</summary>
     public string? Duration { get; init; }
 
+    /// <summary>
+    /// Gets the simple.
+    /// </summary>
+    /// <param name="date">The date.</param>
+    /// <param name="approximate">The approximate.</param>
+    /// <returns>The simple.</returns>
     public static GedcomXDate Simple(GedcomXSimpleDate date, bool approximate = false) => new() { Start = date, IsApproximate = approximate };
 
+    /// <summary>
+    /// Gets the range.
+    /// </summary>
+    /// <param name="start">The start.</param>
+    /// <param name="end">The end.</param>
+    /// <param name="approximate">The approximate.</param>
+    /// <returns>The range.</returns>
     public static GedcomXDate Range(GedcomXSimpleDate? start, GedcomXSimpleDate? end, bool approximate = false) =>
         new() { Start = start, End = end, IsRange = true, IsApproximate = approximate };
 
+    /// <summary>
+    /// Attempts to parse.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <param name="date">When this method returns, contains the date.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public static bool TryParse(string? text, out GedcomXDate date)
     {
         date = new GedcomXDate();
@@ -152,8 +187,14 @@ public sealed partial record GedcomXDate
         return true;
     }
 
+    /// <summary>
+    /// Parses the value.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <returns>The gedcom x date.</returns>
     public static GedcomXDate? Parse(string? text) => TryParse(text, out var date) ? date : null;
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         if (IsRecurring)

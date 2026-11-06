@@ -6,31 +6,49 @@ namespace GedcomSharp;
 /// </summary>
 public static class GedcomEnumerations
 {
+    /// <summary>
+    /// The roles.
+    /// </summary>
     public static readonly IReadOnlySet<string> Roles = new HashSet<string>(StringComparer.Ordinal)
     {
         "CHIL", "CLERGY", "FATH", "FRIEND", "GODP", "HUSB", "MOTH", "MULTIPLE", "NGHBR", "OFFICIATOR", "PARENT", "SPOU", "WIFE", "WITN", "OTHER"
     };
 
+    /// <summary>
+    /// The name types.
+    /// </summary>
     public static readonly IReadOnlySet<string> NameTypes = new HashSet<string>(StringComparer.Ordinal)
     {
         "AKA", "BIRTH", "IMMIGRANT", "MAIDEN", "MARRIED", "PROFESSIONAL", "OTHER"
     };
 
+    /// <summary>
+    /// The pedigrees.
+    /// </summary>
     public static readonly IReadOnlySet<string> Pedigrees = new HashSet<string>(StringComparer.Ordinal)
     {
         "ADOPTED", "BIRTH", "FOSTER", "SEALING", "OTHER"
     };
 
+    /// <summary>
+    /// The media.
+    /// </summary>
     public static readonly IReadOnlySet<string> Media = new HashSet<string>(StringComparer.Ordinal)
     {
         "AUDIO", "BOOK", "CARD", "ELECTRONIC", "FICHE", "FILM", "MAGAZINE", "MANUSCRIPT", "MAP", "NEWSPAPER", "PHOTO", "TOMBSTONE", "VIDEO", "OTHER"
     };
 
+    /// <summary>
+    /// The restrictions.
+    /// </summary>
     public static readonly IReadOnlySet<string> Restrictions = new HashSet<string>(StringComparer.Ordinal)
     {
         "CONFIDENTIAL", "LOCKED", "PRIVACY"
     };
 
+    /// <summary>
+    /// The child link statuses.
+    /// </summary>
     public static readonly IReadOnlySet<string> ChildLinkStatuses = new HashSet<string>(StringComparer.Ordinal)
     {
         "CHALLENGED", "DISPROVEN", "PROVEN"
@@ -77,10 +95,28 @@ public static class GedcomEnumerations
     /// <summary>Maps an ASSO RELA/ROLE text to a 7.0 role; <paramref name="exact"/> is false when OTHER is returned for unknown text.</summary>
     public static string ToRole(string value, out bool exact) => ToEnumeration(value, Roles, roleSynonyms, out exact);
 
+    /// <summary>
+    /// Converts the value to the name type.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="exact">When this method returns, contains the exact.</param>
+    /// <returns>The name type.</returns>
     public static string ToNameType(string value, out bool exact) => ToEnumeration(value, NameTypes, nameTypeSynonyms, out exact);
 
+    /// <summary>
+    /// Converts the value to the pedigree.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="exact">When this method returns, contains the exact.</param>
+    /// <returns>The pedigree.</returns>
     public static string ToPedigree(string value, out bool exact) => ToEnumeration(value, Pedigrees, null, out exact);
 
+    /// <summary>
+    /// Converts the value to the medium.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="exact">When this method returns, contains the exact.</param>
+    /// <returns>The medium.</returns>
     public static string ToMedium(string value, out bool exact) => ToEnumeration(value, Media, null, out exact);
 
     /// <summary>The 5.5.1 RELA text for a 7.0 role.</summary>

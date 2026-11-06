@@ -1,9 +1,21 @@
 namespace GedcomSharp.Values;
 
+/// <summary>
+/// Specifies the gedcom calendar.
+/// </summary>
 public enum GedcomCalendar
 {
+    /// <summary>
+    /// The gregorian value.
+    /// </summary>
     Gregorian,
+    /// <summary>
+    /// The julian value.
+    /// </summary>
     Julian,
+    /// <summary>
+    /// The hebrew value.
+    /// </summary>
     Hebrew,
 
     /// <summary>The French Republican calendar (<c>@#DFRENCH R@</c> in 5.x, <c>FRENCH_R</c> in 7.0).</summary>
@@ -33,6 +45,11 @@ public static class GedcomCalendarMath
         _ => []
     };
 
+    /// <summary>
+    /// Gets the months in year.
+    /// </summary>
+    /// <param name="calendar">The calendar.</param>
+    /// <returns>The months in year.</returns>
     public static int MonthsInYear(GedcomCalendar calendar) => calendar is GedcomCalendar.Hebrew or GedcomCalendar.French ? 13 : 12;
 
     /// <summary>Converts a date to its Julian Day Number. <paramref name="year"/> is astronomical (1 BCE is 0) for Gregorian and Julian.</summary>
@@ -45,6 +62,13 @@ public static class GedcomCalendarMath
         _ => throw new ArgumentOutOfRangeException(nameof(calendar), calendar, "Day arithmetic is not defined for this calendar.")
     };
 
+    /// <summary>
+    /// Gets the days in month.
+    /// </summary>
+    /// <param name="calendar">The calendar.</param>
+    /// <param name="year">The year.</param>
+    /// <param name="month">The month.</param>
+    /// <returns>The days in month.</returns>
     public static int DaysInMonth(GedcomCalendar calendar, int year, int month) => calendar switch
     {
         GedcomCalendar.Gregorian or GedcomCalendar.Julian => month == 12
@@ -62,6 +86,13 @@ public static class GedcomCalendarMath
         _ => ToJulianDay(calendar, year, 1, 1)
     };
 
+    /// <summary>
+    /// Converts the value to the gregorian.
+    /// </summary>
+    /// <param name="julianDay">The julian day.</param>
+    /// <param name="year">When this method returns, contains the year.</param>
+    /// <param name="month">When this method returns, contains the month.</param>
+    /// <param name="day">When this method returns, contains the day.</param>
     public static void ToGregorian(int julianDay, out int year, out int month, out int day)
     {
         long f = julianDay + 1401 + ((((4L * julianDay) + 274277) / 146097) * 3 / 4) - 38;

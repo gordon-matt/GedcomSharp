@@ -9,6 +9,9 @@ namespace GedcomSharp.Gedzip;
 /// </summary>
 public sealed class GedzipPackage : IDisposable
 {
+    /// <summary>
+    /// The dataset entry name constant.
+    /// </summary>
     public const string DATASET_ENTRY_NAME = "gedcom.ged";
 
     private readonly ZipArchive archive;
@@ -29,8 +32,14 @@ public sealed class GedzipPackage : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the file.
+    /// </summary>
     public GedcomFile File { get; }
 
+    /// <summary>
+    /// Gets the dataset entry name.
+    /// </summary>
     public string DatasetEntryName { get; }
 
     /// <summary>The names of all files in the archive except the dataset.</summary>
@@ -52,6 +61,11 @@ public sealed class GedzipPackage : IDisposable
         .Distinct(StringComparer.Ordinal)
         .ToList();
 
+    /// <summary>
+    /// Determines whether the collection contains the specified value.
+    /// </summary>
+    /// <param name="fileReference">The file reference.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public bool Contains(string fileReference) => ResolveEntryName(fileReference) is not null;
 
     /// <summary>
@@ -95,6 +109,12 @@ public sealed class GedzipPackage : IDisposable
     public Stream? OpenFile(string fileReference) =>
         ResolveEntryName(fileReference) is string name ? entries[name].Open() : null;
 
+    /// <summary>
+    /// Reads the file.
+    /// </summary>
+    /// <param name="fileReference">The file reference.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the byte[].</returns>
     public async Task<byte[]?> ReadFileAsync(string fileReference, CancellationToken cancellationToken = default)
     {
         await using var stream = OpenFile(fileReference);
@@ -108,6 +128,9 @@ public sealed class GedzipPackage : IDisposable
         return buffer.ToArray();
     }
 
+    /// <summary>
+    /// Releases the resources used by this instance.
+    /// </summary>
     public void Dispose() => archive.Dispose();
 
     internal static bool IsZip(byte[] data) => data.Length >= 4 && data[0] == 0x50 && data[1] == 0x4B && data[2] is 0x03 or 0x05 or 0x07;
@@ -165,9 +188,21 @@ public sealed class GedzipPackage : IDisposable
 /// <summary>A media file to store in a GEDZIP package under <paramref name="EntryName"/> (the FILE value, as a relative path).</summary>
 public sealed record GedzipFileEntry(string EntryName, Func<CancellationToken, Task<Stream>> OpenAsync)
 {
+    /// <summary>
+    /// Creates a value from the path.
+    /// </summary>
+    /// <param name="entryName">The entry name.</param>
+    /// <param name="filePath">The file path.</param>
+    /// <returns>The path.</returns>
     public static GedzipFileEntry FromPath(string entryName, string filePath) =>
         new(entryName, _ => Task.FromResult<Stream>(System.IO.File.OpenRead(filePath)));
 
+    /// <summary>
+    /// Creates a value from the bytes.
+    /// </summary>
+    /// <param name="entryName">The entry name.</param>
+    /// <param name="data">The data.</param>
+    /// <returns>The bytes.</returns>
     public static GedzipFileEntry FromBytes(string entryName, byte[] data) =>
         new(entryName, _ => Task.FromResult<Stream>(new MemoryStream(data, writable: false)));
 }

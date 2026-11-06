@@ -12,6 +12,9 @@ namespace GedcomSharp.Text;
 /// </remarks>
 public sealed class AnselEncoding : Encoding
 {
+    /// <summary>
+    /// The instance.
+    /// </summary>
     public static readonly AnselEncoding Instance = new();
 
     private const char REPLACEMENT = '\uFFFD';
@@ -19,14 +22,19 @@ public sealed class AnselEncoding : Encoding
     private static readonly char[] decodeTable = BuildDecodeTable();
     private static readonly Dictionary<char, byte> encodeTable = BuildEncodeTable();
 
+    /// <inheritdoc/>
     public override string EncodingName => "ANSEL (GEDCOM)";
 
+    /// <inheritdoc/>
     public override string WebName => "x-gedcom-ansel";
 
+    /// <inheritdoc/>
     public override bool IsSingleByte => false;
 
+    /// <inheritdoc/>
     public override int GetByteCount(char[] chars, int index, int count) => EncodeCore(new string(chars, index, count)).Length;
 
+    /// <inheritdoc/>
     public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
     {
         byte[] encoded = EncodeCore(new string(chars, charIndex, charCount));
@@ -34,8 +42,10 @@ public sealed class AnselEncoding : Encoding
         return encoded.Length;
     }
 
+    /// <inheritdoc/>
     public override int GetCharCount(byte[] bytes, int index, int count) => DecodeCore(bytes.AsSpan(index, count)).Length;
 
+    /// <inheritdoc/>
     public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex)
     {
         string decoded = DecodeCore(bytes.AsSpan(byteIndex, byteCount));
@@ -43,15 +53,24 @@ public sealed class AnselEncoding : Encoding
         return decoded.Length;
     }
 
+    /// <inheritdoc/>
     public override string GetString(byte[] bytes, int index, int count) => DecodeCore(bytes.AsSpan(index, count));
 
+    /// <inheritdoc/>
     public override byte[] GetBytes(string s) => EncodeCore(s);
 
     // Combining marks can make one character several bytes, and normalisation can merge characters.
+    /// <inheritdoc/>
     public override int GetMaxByteCount(int charCount) => (charCount + 1) * 4;
 
+    /// <inheritdoc/>
     public override int GetMaxCharCount(int byteCount) => byteCount * 2;
 
+    /// <summary>
+    /// Determines whether this instance is combining.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public static bool IsCombining(byte value) => value is >= 0xE0 and <= 0xFE && value != 0xFD;
 
     internal static string DecodeCore(ReadOnlySpan<byte> bytes)

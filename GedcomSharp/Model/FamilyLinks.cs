@@ -3,6 +3,9 @@ namespace GedcomSharp.Model;
 /// <summary><c>FAMC</c> under an individual: the family the individual is a child of, and how.</summary>
 public sealed class ChildToFamilyLink(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the family xref.
+    /// </summary>
     public string? FamilyXref
     {
         get => Structure.Pointer;
@@ -26,48 +29,74 @@ public sealed class ChildToFamilyLink(GedcomStructure structure) : GedcomCitable
         set => Set(GedcomTags.STAT, value is null ? null : Version.IsSeven ? value.ToUpperInvariant() : value.ToLowerInvariant());
     }
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The family record.</returns>
     public FamilyRecord? Resolve() => File?.Find<FamilyRecord>(FamilyXref);
 }
 
 /// <summary><c>FAMS</c> under an individual: a family in which the individual is a partner.</summary>
 public sealed class SpouseToFamilyLink(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the family xref.
+    /// </summary>
     public string? FamilyXref
     {
         get => Structure.Pointer;
         set => Structure.Pointer = value;
     }
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The family record.</returns>
     public FamilyRecord? Resolve() => File?.Find<FamilyRecord>(FamilyXref);
 }
 
 /// <summary>An LDS ordinance: BAPL, CONL, ENDL, INIL, SLGC (individual) or SLGS (family).</summary>
 public sealed class LdsOrdinance(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the date.
+    /// </summary>
     public GedcomDate Date
     {
         get => GetDate();
         set => SetDate(value);
     }
 
+    /// <summary>
+    /// Gets or sets the temple.
+    /// </summary>
     public string? Temple
     {
         get => Get(GedcomTags.TEMP);
         set => Set(GedcomTags.TEMP, value);
     }
 
+    /// <summary>
+    /// Gets or sets the place name.
+    /// </summary>
     public string? PlaceName
     {
         get => Get(GedcomTags.PLAC);
         set => Set(GedcomTags.PLAC, value);
     }
 
+    /// <summary>
+    /// Gets or sets the status.
+    /// </summary>
     public string? Status
     {
         get => Get(GedcomTags.STAT);
         set => Set(GedcomTags.STAT, value);
     }
 
+    /// <summary>
+    /// Gets the status date.
+    /// </summary>
     public GedcomDate StatusDate => Structure.Child(GedcomTags.STAT)?.Child(GedcomTags.DATE) is { } date
         ? GedcomDate.Parse(date.Value, date.ChildValue(GedcomTags.PHRASE))
         : GedcomDate.Empty;
@@ -105,6 +134,9 @@ public sealed class MultimediaFile(GedcomStructure structure) : GedcomStructureV
         set => Structure.GetOrAddChild(GedcomTags.FORM).SetChildValue(GedcomTags.MEDI, value);
     }
 
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
     public string? Title
     {
         get => Get(GedcomTags.TITL) ?? Structure.Parent?.ChildValue(GedcomTags.TITL);

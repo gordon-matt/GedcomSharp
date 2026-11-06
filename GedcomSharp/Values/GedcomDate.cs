@@ -1,16 +1,37 @@
 namespace GedcomSharp.Values;
 
+/// <summary>
+/// Specifies the gedcom date kind.
+/// </summary>
 public enum GedcomDateKind
 {
+    /// <summary>
+    /// The empty value.
+    /// </summary>
     Empty,
 
     /// <summary>A plain date: <c>1 JAN 1900</c>, <c>JAN 1900</c> or <c>1900</c>.</summary>
     Simple,
 
+    /// <summary>
+    /// The about value.
+    /// </summary>
     About,
+    /// <summary>
+    /// The calculated value.
+    /// </summary>
     Calculated,
+    /// <summary>
+    /// The estimated value.
+    /// </summary>
     Estimated,
+    /// <summary>
+    /// The before value.
+    /// </summary>
     Before,
+    /// <summary>
+    /// The after value.
+    /// </summary>
     After,
 
     /// <summary><c>BET x AND y</c>: the event happened on one day in the range.</summary>
@@ -43,8 +64,14 @@ public enum GedcomDateKind
 /// </summary>
 public sealed record GedcomDate : IComparable<GedcomDate>
 {
+    /// <summary>
+    /// Gets the empty.
+    /// </summary>
     public static GedcomDate Empty { get; } = new() { Kind = GedcomDateKind.Empty };
 
+    /// <summary>
+    /// Gets or sets the kind.
+    /// </summary>
     public GedcomDateKind Kind { get; init; }
 
     /// <summary>The date for single-date kinds, or the start of a range or period. Null for <see cref="GedcomDateKind.To"/>.</summary>
@@ -62,23 +89,51 @@ public sealed record GedcomDate : IComparable<GedcomDate>
     /// <summary>True when the text was not in standard GEDCOM syntax but was understood (e.g. <c>circa 1900</c>).</summary>
     public bool WasNormalized { get; init; }
 
+    /// <summary>
+    /// Gets a value indicating whether this instance is empty.
+    /// </summary>
     public bool IsEmpty => Kind == GedcomDateKind.Empty;
 
     /// <summary>True when the value has at least one calendar date.</summary>
     public bool HasDate => Start is not null || End is not null;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance is range.
+    /// </summary>
     public bool IsRange => Kind is GedcomDateKind.Between or GedcomDateKind.FromTo;
 
     /// <summary>The first date in the value (Start, or End for TO dates).</summary>
     public GedcomDatePart? Date => Start ?? End;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance is approximate.
+    /// </summary>
     public bool IsApproximate => Kind is GedcomDateKind.About or GedcomDateKind.Calculated or GedcomDateKind.Estimated;
 
+    /// <summary>
+    /// Gets the exact.
+    /// </summary>
+    /// <param name="year">The year.</param>
+    /// <param name="month">The month.</param>
+    /// <param name="day">The day.</param>
+    /// <param name="calendar">The calendar.</param>
+    /// <returns>The exact.</returns>
     public static GedcomDate Exact(int year, int? month = null, int? day = null, GedcomCalendar calendar = GedcomCalendar.Gregorian) =>
         new() { Kind = GedcomDateKind.Simple, Start = new GedcomDatePart(year, month, day, calendar) };
 
+    /// <summary>
+    /// Creates a value from the date only.
+    /// </summary>
+    /// <param name="date">The date.</param>
+    /// <returns>The date only.</returns>
     public static GedcomDate FromDateOnly(DateOnly date) => new() { Kind = GedcomDateKind.Simple, Start = GedcomDatePart.FromDateOnly(date) };
 
+    /// <summary>
+    /// Creates the value.
+    /// </summary>
+    /// <param name="kind">The kind.</param>
+    /// <param name="date">The date.</param>
+    /// <returns>The gedcom date.</returns>
     public static GedcomDate Create(GedcomDateKind kind, GedcomDatePart date) => kind switch
     {
         GedcomDateKind.To => new GedcomDate { Kind = kind, End = date },
@@ -87,8 +142,20 @@ public sealed record GedcomDate : IComparable<GedcomDate>
         _ => throw new ArgumentException($"{kind} needs two dates or a phrase.", nameof(kind))
     };
 
+    /// <summary>
+    /// Gets the between.
+    /// </summary>
+    /// <param name="start">The start.</param>
+    /// <param name="end">The end.</param>
+    /// <returns>The between.</returns>
     public static GedcomDate Between(GedcomDatePart start, GedcomDatePart end) => new() { Kind = GedcomDateKind.Between, Start = start, End = end };
 
+    /// <summary>
+    /// Gets the period.
+    /// </summary>
+    /// <param name="start">The start.</param>
+    /// <param name="end">The end.</param>
+    /// <returns>The period.</returns>
     public static GedcomDate Period(GedcomDatePart? start, GedcomDatePart? end) => (start, end) switch
     {
         (not null, not null) => new GedcomDate { Kind = GedcomDateKind.FromTo, Start = start, End = end },
@@ -97,6 +164,11 @@ public sealed record GedcomDate : IComparable<GedcomDate>
         _ => Empty
     };
 
+    /// <summary>
+    /// Creates a value from the phrase.
+    /// </summary>
+    /// <param name="phrase">The phrase.</param>
+    /// <returns>The phrase.</returns>
     public static GedcomDate FromPhrase(string phrase) => new() { Kind = GedcomDateKind.Phrase, Phrase = phrase };
 
     /// <summary>Parses a date leniently. Never throws; text that is not a date gives <see cref="GedcomDateKind.Unparsed"/>.</summary>
@@ -119,6 +191,12 @@ public sealed record GedcomDate : IComparable<GedcomDate>
         };
     }
 
+    /// <summary>
+    /// Attempts to parse.
+    /// </summary>
+    /// <param name="text">The text.</param>
+    /// <param name="date">When this method returns, contains the date.</param>
+    /// <returns>true when the condition is met; otherwise, false.</returns>
     public static bool TryParse(string? text, out GedcomDate date)
     {
         date = Parse(text);
@@ -155,8 +233,17 @@ public sealed record GedcomDate : IComparable<GedcomDate>
     /// <summary>The year of the first date, for display and quick filtering.</summary>
     public int? Year => Date?.Year is int year ? (Date.IsBce ? -year : year) : null;
 
+    /// <summary>
+    /// Converts the value to the date only.
+    /// </summary>
+    /// <returns>The date only.</returns>
     public DateOnly? ToDateOnly() => Kind is GedcomDateKind.Simple or GedcomDateKind.Interpreted ? Start?.ToDateOnly() : null;
 
+    /// <summary>
+    /// Compares to.
+    /// </summary>
+    /// <param name="other">The other.</param>
+    /// <returns>The int.</returns>
     public int CompareTo(GedcomDate? other)
     {
         if (other is null)
@@ -237,6 +324,7 @@ public sealed record GedcomDate : IComparable<GedcomDate>
         && Phrase == other.Phrase
         && (Kind != GedcomDateKind.Unparsed || OriginalText == other.OriginalText);
 
+    /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine(Kind, Start, End, Phrase, Kind == GedcomDateKind.Unparsed ? OriginalText : null);
 
     /// <summary>The 7.0 form, with any phrase in brackets: <c>JULIAN 1 JAN 1700</c>, <c>ABT 1900 (family bible)</c>.</summary>

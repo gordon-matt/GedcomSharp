@@ -9,6 +9,10 @@ public sealed class GedcomStructureCollection : Collection<GedcomStructure>
 
     internal GedcomStructureCollection(GedcomStructure parent) => owner = parent;
 
+    /// <summary>
+    /// Adds the range.
+    /// </summary>
+    /// <param name="structures">The structures.</param>
     public void AddRange(IEnumerable<GedcomStructure> structures)
     {
         foreach (var structure in structures)
@@ -17,12 +21,14 @@ public sealed class GedcomStructureCollection : Collection<GedcomStructure>
         }
     }
 
+    /// <inheritdoc/>
     protected override void InsertItem(int index, GedcomStructure item)
     {
         Attach(item);
         base.InsertItem(index, item);
     }
 
+    /// <inheritdoc/>
     protected override void SetItem(int index, GedcomStructure item)
     {
         var previous = this[index];
@@ -36,12 +42,14 @@ public sealed class GedcomStructureCollection : Collection<GedcomStructure>
         base.SetItem(index, item);
     }
 
+    /// <inheritdoc/>
     protected override void RemoveItem(int index)
     {
         this[index].Parent = null;
         base.RemoveItem(index);
     }
 
+    /// <inheritdoc/>
     protected override void ClearItems()
     {
         foreach (var item in this)
@@ -82,6 +90,10 @@ public sealed class GedcomRecordCollection : Collection<GedcomStructure>
 
     internal GedcomRecordCollection(GedcomFile file) => owner = file;
 
+    /// <summary>
+    /// Adds the range.
+    /// </summary>
+    /// <param name="records">The records.</param>
     public void AddRange(IEnumerable<GedcomStructure> records)
     {
         foreach (var record in records)
@@ -90,6 +102,7 @@ public sealed class GedcomRecordCollection : Collection<GedcomStructure>
         }
     }
 
+    /// <inheritdoc/>
     protected override void InsertItem(int index, GedcomStructure item)
     {
         Attach(item);
@@ -97,6 +110,7 @@ public sealed class GedcomRecordCollection : Collection<GedcomStructure>
         owner.OnXrefChanged();
     }
 
+    /// <inheritdoc/>
     protected override void SetItem(int index, GedcomStructure item)
     {
         var previous = this[index];
@@ -111,6 +125,7 @@ public sealed class GedcomRecordCollection : Collection<GedcomStructure>
         owner.OnXrefChanged();
     }
 
+    /// <inheritdoc/>
     protected override void RemoveItem(int index)
     {
         this[index].Owner = null;
@@ -118,6 +133,7 @@ public sealed class GedcomRecordCollection : Collection<GedcomStructure>
         owner.OnXrefChanged();
     }
 
+    /// <inheritdoc/>
     protected override void ClearItems()
     {
         foreach (var item in this)

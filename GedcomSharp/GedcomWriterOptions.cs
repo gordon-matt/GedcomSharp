@@ -3,8 +3,14 @@ using GedcomSharp.Text;
 
 namespace GedcomSharp;
 
+/// <summary>
+/// Represents the gedcom writer options.
+/// </summary>
 public sealed class GedcomWriterOptions
 {
+    /// <summary>
+    /// Gets the default.
+    /// </summary>
     public static GedcomWriterOptions Default { get; } = new();
 
     /// <summary>The version to write. Null writes the file's own version; any other version converts a copy first.</summary>
@@ -42,8 +48,14 @@ public sealed class GedcomWriterOptions
     /// <summary>Written to HEAD.SOUR (the exporting system's id) when set or when the header has none.</summary>
     public string? SourceSystem { get; set; }
 
+    /// <summary>
+    /// Gets or sets the source name.
+    /// </summary>
     public string? SourceName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the source version.
+    /// </summary>
     public string? SourceVersion { get; set; }
 
     /// <summary>Written to HEAD.DATE/TIME when set.</summary>

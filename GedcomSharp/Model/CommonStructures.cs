@@ -3,12 +3,18 @@ namespace GedcomSharp.Model;
 /// <summary><c>REFN</c>: a user-defined number or code for a record, with an optional <c>TYPE</c>.</summary>
 public sealed class UserReference(GedcomStructure structure) : GedcomStructureView(structure)
 {
+    /// <summary>
+    /// Gets or sets the number.
+    /// </summary>
     public string? Number
     {
         get => Value;
         set => Value = value;
     }
 
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
     public string? Type
     {
         get => Get(GedcomTags.TYPE);
@@ -19,16 +25,31 @@ public sealed class UserReference(GedcomStructure structure) : GedcomStructureVi
 /// <summary><c>EXID</c> (7.0): an identifier assigned by an external authority, scoped by a <c>TYPE</c> URI.</summary>
 public sealed class ExternalId(GedcomStructure structure) : GedcomStructureView(structure)
 {
+    /// <summary>
+    /// The afn type constant.
+    /// </summary>
     public const string AFN_TYPE = "https://gedcom.io/terms/v7/AFN";
+    /// <summary>
+    /// The rfn type constant.
+    /// </summary>
     public const string RFN_TYPE = "https://gedcom.io/terms/v7/RFN";
+    /// <summary>
+    /// The rin type constant.
+    /// </summary>
     public const string RIN_TYPE = "https://gedcom.io/terms/v7/RIN";
 
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
     public string? Id
     {
         get => Value;
         set => Value = value;
     }
 
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
     public string? Type
     {
         get => Get(GedcomTags.TYPE);
@@ -39,6 +60,9 @@ public sealed class ExternalId(GedcomStructure structure) : GedcomStructureView(
 /// <summary><c>CHAN</c> or <c>CREA</c>: when a record was last changed or created.</summary>
 public sealed class ChangeDate(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the date.
+    /// </summary>
     public GedcomDate Date
     {
         get => GetDate();
@@ -96,8 +120,14 @@ public sealed class ChangeDate(GedcomStructure structure) : GedcomCitableView(st
 /// <summary>A <c>NOTE</c> or <c>SNOTE</c> under another structure: inline text, or a pointer to a shared note record.</summary>
 public sealed class NoteLink(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets a value indicating whether this instance is reference.
+    /// </summary>
     public bool IsReference => Structure.HasPointer;
 
+    /// <summary>
+    /// Gets or sets the note xref.
+    /// </summary>
     public string? NoteXref
     {
         get => Structure.Pointer;
@@ -111,6 +141,10 @@ public sealed class NoteLink(GedcomStructure structure) : GedcomCitableView(stru
         set => Value = value;
     }
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The note record.</returns>
     public NoteRecord? Resolve() => IsReference && File?.Find(Structure.Pointer!) is { } record && record.Tag is GedcomTags.NOTE or GedcomTags.SNOTE
         ? new NoteRecord(record)
         : null;
@@ -122,6 +156,9 @@ public sealed class NoteLink(GedcomStructure structure) : GedcomCitableView(stru
         set => Set(GedcomTags.MIME, value);
     }
 
+    /// <summary>
+    /// Gets or sets the language.
+    /// </summary>
     public string? Language
     {
         get => Get(GedcomTags.LANG);
@@ -132,8 +169,14 @@ public sealed class NoteLink(GedcomStructure structure) : GedcomCitableView(stru
 /// <summary>A source citation (<c>SOUR</c> under another structure): a pointer to a source record, or 5.x embedded source text.</summary>
 public sealed class SourceCitation(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets a value indicating whether this instance is reference.
+    /// </summary>
     public bool IsReference => Structure.HasPointer;
 
+    /// <summary>
+    /// Gets or sets the source xref.
+    /// </summary>
     public string? SourceXref
     {
         get => Structure.Pointer;
@@ -143,6 +186,10 @@ public sealed class SourceCitation(GedcomStructure structure) : GedcomCitableVie
     /// <summary>The description of an embedded (5.x, pointer-less) source.</summary>
     public string? EmbeddedText => IsReference ? null : Value;
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The source record.</returns>
     public SourceRecord? Resolve() => IsReference && File?.Find(Structure.Pointer!) is { Tag: GedcomTags.SOUR } record
         ? new SourceRecord(record)
         : null;
@@ -168,6 +215,9 @@ public sealed class SourceCitation(GedcomStructure structure) : GedcomCitableVie
         set => Set(GedcomTags.EVEN, value);
     }
 
+    /// <summary>
+    /// Gets or sets the role.
+    /// </summary>
     public string? Role
     {
         get => Structure.Child(GedcomTags.EVEN)?.ChildValue(GedcomTags.ROLE);
@@ -184,6 +234,10 @@ public sealed class SourceCitation(GedcomStructure structure) : GedcomCitableVie
     /// <summary>Transcribed text from the source (<c>DATA.TEXT</c>; CONT lines are joined with newlines).</summary>
     public IEnumerable<string> Texts => Structure.Child(GedcomTags.DATA)?.ChildrenWithTag(GedcomTags.TEXT).Select(text => text.Value ?? string.Empty) ?? [];
 
+    /// <summary>
+    /// Adds the text.
+    /// </summary>
+    /// <param name="text">The text.</param>
     public void AddText(string text) => Structure.GetOrAddChild(GedcomTags.DATA).AddChild(GedcomTags.TEXT, text);
 
     private sealed class SourceCitationData(GedcomStructure structure) : GedcomStructureView(structure)
@@ -199,14 +253,24 @@ public sealed class SourceCitation(GedcomStructure structure) : GedcomCitableVie
 /// <summary>An <c>OBJE</c> under another structure: a pointer to a multimedia record, or a 5.x embedded object.</summary>
 public sealed class MultimediaLink(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets a value indicating whether this instance is reference.
+    /// </summary>
     public bool IsReference => Structure.HasPointer;
 
+    /// <summary>
+    /// Gets or sets the multimedia xref.
+    /// </summary>
     public string? MultimediaXref
     {
         get => Structure.Pointer;
         set => Structure.Pointer = value;
     }
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The multimedia record.</returns>
     public MultimediaRecord? Resolve() => IsReference && File?.Find(Structure.Pointer!) is { Tag: GedcomTags.OBJE } record
         ? new MultimediaRecord(record)
         : null;
@@ -242,6 +306,9 @@ public sealed class MultimediaLink(GedcomStructure structure) : GedcomCitableVie
 /// <summary><c>ASSO</c>: a link to an associated individual and their role, e.g. a godparent or witness.</summary>
 public sealed class Association(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the individual xref.
+    /// </summary>
     public string? IndividualXref
     {
         get => Structure.Pointer;
@@ -279,19 +346,33 @@ public sealed class Association(GedcomStructure structure) : GedcomCitableView(s
         }
     }
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The individual record.</returns>
     public IndividualRecord? Resolve() => File?.Find<IndividualRecord>(IndividualXref);
 }
 
 /// <summary>A <c>REPO</c> citation inside a source record, with call numbers.</summary>
 public sealed class RepositoryCitation(GedcomStructure structure) : GedcomCitableView(structure)
 {
+    /// <summary>
+    /// Gets or sets the repository xref.
+    /// </summary>
     public string? RepositoryXref
     {
         get => Structure.Pointer;
         set => Structure.Pointer = value;
     }
 
+    /// <summary>
+    /// Gets the call numbers.
+    /// </summary>
     public IEnumerable<string> CallNumbers => Values(GedcomTags.CALN);
 
+    /// <summary>
+    /// Resolves the value.
+    /// </summary>
+    /// <returns>The repository record.</returns>
     public RepositoryRecord? Resolve() => File?.Find<RepositoryRecord>(RepositoryXref);
 }

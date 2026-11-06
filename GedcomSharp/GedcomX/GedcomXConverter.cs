@@ -16,6 +16,11 @@ public static class GedcomXConverter
         .GroupBy(pair => pair.Value, StringComparer.Ordinal)
         .ToDictionary(group => group.Key, group => group.First().Key, StringComparer.Ordinal);
 
+    /// <summary>
+    /// Converts the value to the gedcom x.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <returns>The gedcom x.</returns>
     public static GedcomXDocument ToGedcomX(GedcomFile file)
     {
         ArgumentNullException.ThrowIfNull(file);

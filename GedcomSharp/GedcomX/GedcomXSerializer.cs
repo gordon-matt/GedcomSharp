@@ -9,29 +9,80 @@ namespace GedcomSharp.GedcomX;
 /// <summary>Reads and writes GEDCOM X documents as JSON or XML, and GEDCOM X files (<c>.gedx</c> archives).</summary>
 public interface IGedcomXSerializer
 {
+    /// <summary>
+    /// Converts the value to the JSON.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <param name="indented">The indented.</param>
+    /// <returns>The JSON.</returns>
     string ToJson(GedcomXDocument document, bool indented = true);
 
+    /// <summary>
+    /// Creates a value from the JSON.
+    /// </summary>
+    /// <param name="json">The JSON.</param>
+    /// <returns>The outcome for the gedcom x document.</returns>
     Result<GedcomXDocument> FromJson(string json);
 
+    /// <summary>
+    /// Converts the value to the XML.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <returns>The XML.</returns>
     string ToXml(GedcomXDocument document);
 
+    /// <summary>
+    /// Creates a value from the XML.
+    /// </summary>
+    /// <param name="xml">The XML.</param>
+    /// <returns>The outcome for the gedcom x document.</returns>
     Result<GedcomXDocument> FromXml(string xml);
 
     /// <summary>Reads a JSON or XML document, telling them apart by the first non-blank character.</summary>
     Task<Result<GedcomXDocument>> ReadAsync(Stream stream, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Writes the JSON.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     Task WriteJsonAsync(GedcomXDocument document, Stream stream, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Writes the XML.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     Task WriteXmlAsync(GedcomXDocument document, Stream stream, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Reads the file.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom x file.</returns>
     Task<Result<GedcomXFile>> ReadFileAsync(Stream stream, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Writes the file.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the result.</returns>
     Task<Result> WriteFileAsync(GedcomXFile file, Stream stream, CancellationToken cancellationToken = default);
 }
 
 /// <summary>A GEDCOM X file: a ZIP archive with a manifest, one or more GEDCOM X documents and other resources such as images.</summary>
 public sealed class GedcomXFile
 {
+    /// <summary>
+    /// The manifest entry name constant.
+    /// </summary>
     public const string MANIFEST_ENTRY_NAME = "META-INF/MANIFEST.MF";
 
     /// <summary>GEDCOM X documents by entry name, e.g. <c>tree.json</c>.</summary>
@@ -47,14 +98,28 @@ public sealed class GedcomXFile
     public GedcomXDocument? MainDocument => Documents.Values.FirstOrDefault();
 }
 
+/// <summary>
+/// Represents the gedcom x serializer.
+/// </summary>
 public sealed class GedcomXSerializer : IGedcomXSerializer
 {
     private static readonly JsonSerializerOptions jsonOptions = CreateJsonOptions(indented: true);
     private static readonly JsonSerializerOptions compactJsonOptions = CreateJsonOptions(indented: false);
 
+    /// <summary>
+    /// Converts the value to the JSON.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <param name="indented">The indented.</param>
+    /// <returns>The JSON.</returns>
     public string ToJson(GedcomXDocument document, bool indented = true) =>
         JsonSerializer.Serialize(document, indented ? jsonOptions : compactJsonOptions);
 
+    /// <summary>
+    /// Creates a value from the JSON.
+    /// </summary>
+    /// <param name="json">The JSON.</param>
+    /// <returns>The outcome for the gedcom x document.</returns>
     public Result<GedcomXDocument> FromJson(string json)
     {
         try
@@ -68,6 +133,11 @@ public sealed class GedcomXSerializer : IGedcomXSerializer
         }
     }
 
+    /// <summary>
+    /// Converts the value to the XML.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <returns>The XML.</returns>
     public string ToXml(GedcomXDocument document)
     {
         var xml = GedcomXXml.Write(document);
@@ -76,6 +146,11 @@ public sealed class GedcomXSerializer : IGedcomXSerializer
         return writer.ToString();
     }
 
+    /// <summary>
+    /// Creates a value from the XML.
+    /// </summary>
+    /// <param name="xml">The XML.</param>
+    /// <returns>The outcome for the gedcom x document.</returns>
     public Result<GedcomXDocument> FromXml(string xml)
     {
         try
@@ -88,6 +163,12 @@ public sealed class GedcomXSerializer : IGedcomXSerializer
         }
     }
 
+    /// <summary>
+    /// Reads the value.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom x document.</returns>
     public async Task<Result<GedcomXDocument>> ReadAsync(Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -97,9 +178,23 @@ public sealed class GedcomXSerializer : IGedcomXSerializer
         return trimmed.StartsWith('<') ? FromXml(text) : FromJson(text);
     }
 
+    /// <summary>
+    /// Writes the JSON.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task WriteJsonAsync(GedcomXDocument document, Stream stream, CancellationToken cancellationToken = default) =>
         await JsonSerializer.SerializeAsync(stream, document, jsonOptions, cancellationToken);
 
+    /// <summary>
+    /// Writes the XML.
+    /// </summary>
+    /// <param name="document">The document.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task WriteXmlAsync(GedcomXDocument document, Stream stream, CancellationToken cancellationToken = default)
     {
         var settings = new XmlWriterSettings { Async = true, Indent = true, Encoding = new UTF8Encoding(false) };
@@ -107,6 +202,12 @@ public sealed class GedcomXSerializer : IGedcomXSerializer
         await GedcomXXml.Write(document).SaveAsync(writer, cancellationToken);
     }
 
+    /// <summary>
+    /// Reads the file.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result is the outcome for the gedcom x file.</returns>
     public async Task<Result<GedcomXFile>> ReadFileAsync(Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
@@ -169,6 +270,13 @@ public sealed class GedcomXSerializer : IGedcomXSerializer
         }
     }
 
+    /// <summary>
+    /// Writes the file.
+    /// </summary>
+    /// <param name="file">The file.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the result.</returns>
     public async Task<Result> WriteFileAsync(GedcomXFile file, Stream stream, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(file);

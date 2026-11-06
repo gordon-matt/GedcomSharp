@@ -7,6 +7,9 @@ namespace GedcomSharp;
 /// </summary>
 public enum GedcomVersion
 {
+    /// <summary>
+    /// The unknown value.
+    /// </summary>
     Unknown = 0,
 
     /// <summary>GEDCOM 5.5 (1996). Also used for files that claim 5.3, 5.4 or earlier.</summary>
@@ -22,6 +25,9 @@ public enum GedcomVersion
     V70 = 700
 }
 
+/// <summary>
+/// Provides extension methods for gedcom versions.
+/// </summary>
 public static class GedcomVersionExtensions
 {
     extension(GedcomVersion version)
@@ -29,6 +35,9 @@ public static class GedcomVersionExtensions
         /// <summary>True for the 5.x family (5.5, 5.5.1, 5.5.5), which shares the CONC/escape grammar.</summary>
         public bool IsLegacy => version is GedcomVersion.V55 or GedcomVersion.V551 or GedcomVersion.V555;
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is seven.
+        /// </summary>
         public bool IsSeven => version == GedcomVersion.V70;
 
         /// <summary>The value written to <c>HEAD.GEDC.VERS</c>.</summary>
